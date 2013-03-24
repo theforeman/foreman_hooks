@@ -1,0 +1,4 @@
+.rvmrc
+Gemfile.lock
+test/foreman_app
+.bundle
