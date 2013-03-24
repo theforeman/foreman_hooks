@@ -53,7 +53,7 @@ module ForemanHooks::OrchestrationHook
     end
 
     def hook_execute_set
-      @obj.exec_hook(@filename, @event, *args)
+      @obj.exec_hook(@filename, @event == 'destroy' ? 'create' : @event, *args)
     end
 
     def hook_execute_del
