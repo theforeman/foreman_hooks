@@ -33,9 +33,9 @@ Each file within the directory is executed in alphabetical order.
 
 Examples:
 
+    ~foreman/config/hooks/host/create/50_register_system.sh
+    ~foreman/config/hooks/host/destroy/15_cleanup_database.sh
     ~foreman/config/hooks/smart_proxy/after_create/01_email_operations.sh
-    ~foreman/config/hooks/host/before_provision/50_do_something.sh
-    ~foreman/config/hooks/host/managed/after_destroy/15_cleanup_database.sh
 
 Note that in Foreman 1.1, hosts are just named `Host` so hooks go in a `host/`
 directory, while in Foreman 1.2 they're `Host::Base` and `Host::Managed`, so
@@ -50,7 +50,20 @@ Every object (or model in Rails terms) in Foreman can have hooks.  Check
 * `host/discovered` (Foreman 1.2)
 * `report`
 
-## Events
+## Orchestration events
+
+Foreman supports orchestration tasks for hosts and NICs (each network
+interface) which happen when the object is created, updated and destroyed.
+These tasks are shown to the user in the UI and if they fail, will
+automatically trigger a rollback of the action.
+
+To add hooks to these, use these event names:
+
+* `create`
+* `update`
+* `destroy`
+
+## Rails events
 
 These are the most interesting events that Rails provides and this plugin
 exposes:
@@ -71,9 +84,21 @@ The host object has two special callbacks in Foreman 1.1 that you can use:
 ## Execution of hooks
 
 Hooks are executed in the context of the Foreman server, so usually under the
-`foreman` user.  One argument is provided, which is the string representation
-of the object that was hooked, e.g. the hostname for a host.  No other data
-about the object is currently made available.
+`foreman` user.
+
+The first argument is always the event name, enabling scripts to be symlinked
+into multiple event directories.  The second argument is the string
+representation of the object that was hooked, e.g. the hostname for a host.
+No other data about the object is currently made available.
+
+Every hook within the event directory is executed in alphabetical order.  For
+orchestration hooks, an integer prefix in the hook filename will be used as
+the priority value, so influences where it's done in relation to DNS, DHCP, VM
+creation and other tasks.
+
+If a hook fails (non-zero return code), the event is logged.  
+For orchestration events, a failure will halt the action and rollback will
+occur.  For Rails events, execution of other hooks will continue.
 
 # Copyright
 
