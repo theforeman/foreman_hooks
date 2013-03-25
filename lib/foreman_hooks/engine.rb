@@ -13,10 +13,7 @@ module ForemanHooks
 
       # Find any orchestration related hooks and register in those classes
       ForemanHooks::HooksObserver.hooks.each do |klass,events|
-        orchestrate = false
-        events.keys.each do |event|
-          orchestrate = true if ['create', 'update', 'destroy'].include? event
-        end
+        orchestrate = events.keys.detect { |event| ['create', 'update', 'destroy'].include? event }
         klass.send(:include, ForemanHooks::OrchestrationHook) if orchestrate
       end
     end
