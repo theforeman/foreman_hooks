@@ -1,11 +1,12 @@
 # foreman_hooks
 
 Allows you to trigger scripts and commands on the Foreman server at any point
-in an object's lifecycle in Foreman.  This lets you run a script when a host
+in an object's lifecycle in Foreman.  This lets you run scripts when a host
 is created, or finishes provisioning etc.
 
-It observes every object in Foreman and exposes the Rails callbacks by running
-scripts within its hooks directory.
+It enables extension of Foreman's host orchestration so additional tasks can
+be executed, and can register hooks into standard Rails callbacks for any
+Foreman object, all with shell scripts.
 
 # Installation:
 
@@ -29,7 +30,8 @@ To upgrade to newest version of the plugin:
 
 Hooks are stored in `/usr/share/foreman/config/hooks` (`~foreman/config/hooks`)
 with a subdirectory for the object, then a subdirectory for the event name.
-Each file within the directory is executed in alphabetical order.
+
+    ~foreman/config/hooks/$OBJECT/$EVENT/$HOOK_SCRIPT
 
 Examples:
 
@@ -37,17 +39,15 @@ Examples:
     ~foreman/config/hooks/host/destroy/15_cleanup_database.sh
     ~foreman/config/hooks/smart_proxy/after_create/01_email_operations.sh
 
-Note that in Foreman 1.1, hosts are just named `Host` so hooks go in a `host/`
-directory, while in Foreman 1.2 they're `Host::Base` and `Host::Managed`, so
-the hook directory becomes `host/base/` and `host/managed/` respectively.
+In Foreman 1.1, all hosts are `host` but in Foreman 1.2, managed hosts will
+become `host/managed` instead.
 
 ## Objects / Models
 
 Every object (or model in Rails terms) in Foreman can have hooks.  Check
 `~foreman/app/models` for the full list, but these are the interesting ones:
 
-* `host` (Foreman 1.1), `host/managed` (Foreman 1.2)
-* `host/discovered` (Foreman 1.2)
+* `host` (or `host/managed` in Foreman 1.2)
 * `report`
 
 ## Orchestration events
@@ -65,21 +65,22 @@ To add hooks to these, use these event names:
 
 ## Rails events
 
-These are the most interesting events that Rails provides and this plugin
-exposes:
+For hooks on anything apart from hosts (which support orchestration, as above)
+then the standard Rails events will be needed.  These are the most interesting
+events provided:
 
-* `after_create`
-* `after_destroy`
+* `after_create`, `before_create`
+* `after_destroy`, `before_destroy`
 
 Every event has a "before" and "after" hook.  For the full list, see the
 Constants section at the bottom of the
 [ActiveRecord::Callbacks](http://api.rubyonrails.org/classes/ActiveRecord/Callbacks.html)
 documentation.
 
-The host object has two special callbacks in Foreman 1.1 that you can use:
+The host object has two additional callbacks that you can use:
 
-* `host/after_build` triggers when a host is put into Build mode(??)
-* `host/before_provision` triggers... (??)
+* `host/after_build` triggers when a host is put into build mode
+* `host/before_provision` triggers when a host completes the OS install
 
 ## Execution of hooks
 
@@ -96,9 +97,16 @@ orchestration hooks, an integer prefix in the hook filename will be used as
 the priority value, so influences where it's done in relation to DNS, DHCP, VM
 creation and other tasks.
 
-If a hook fails (non-zero return code), the event is logged.  
+## Hook failures and rollback
+
+If a hook fails (non-zero return code), the event is logged.  For Rails events,
+execution of other hooks will continue.
+
 For orchestration events, a failure will halt the action and rollback will
-occur.  For Rails events, execution of other hooks will continue.
+occur.  If another orchestration action fails, the hook might be called again
+to rollback its action - in this case the first argument will change as
+appropriate, so must be obeyed by the script (e.g. a "create" hook will be
+called with "destroy" if it has to be rolled back later).
 
 # Copyright
 
