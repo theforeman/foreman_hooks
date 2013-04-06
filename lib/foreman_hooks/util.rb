@@ -63,14 +63,25 @@ module ForemanHooks::Util
   def exec_hook(*args)
     logger.debug "Running hook: #{args.join(' ')}"
     success = if defined? Bundler && Bundler.responds_to(:with_clean_env)
-                Bundler.with_clean_env { system(*args) }
+                Bundler.with_clean_env { exec_hook_int(self.to_json, *args) }
               else
-                system(*args)
-              end
+                exec_hook_int(self.to_json, *args)
+              end.success?
 
     unless success
       logger.warn "Hook failure running `#{args.join(' ')}`: #{$?}"
     end
     success
+  end
+
+  def exec_hook_int(stdin_data, *args)
+    output = nil
+    IO.popen(args.push(:err=>[:child, :out]), mode='r+') do |io|
+      io.write(stdin_data)
+      io.close_write
+      output = io.read
+    end
+    logger.debug "Hook output: #{output}" if output && !output.empty?
+    $?
   end
 end

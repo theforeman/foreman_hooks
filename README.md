@@ -90,7 +90,17 @@ Hooks are executed in the context of the Foreman server, so usually under the
 The first argument is always the event name, enabling scripts to be symlinked
 into multiple event directories.  The second argument is the string
 representation of the object that was hooked, e.g. the hostname for a host.
-No other data about the object is currently made available.
+
+    ~foreman/config/hooks/host/create/50_register_system.sh create foo.example.com
+
+A JSON representation of the hook object will be passed in on stdin.  A utility
+to read this with jgrep is provided in `examples/hook_functions.sh` and
+sourcing this utility script will be enough for most users.  Otherwise, you
+may want to ensure stdin is closed.
+
+    echo '{"host"=>{"name"=>"foo.example.com"}}' \
+      | ~foreman/config/hooks/host/create/50_register_system.sh \
+           create foo.example.com
 
 Every hook within the event directory is executed in alphabetical order.  For
 orchestration hooks, an integer prefix in the hook filename will be used as
