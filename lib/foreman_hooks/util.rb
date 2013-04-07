@@ -35,7 +35,7 @@ module ForemanHooks::Util
           @hooks = discover_hooks
           @hooks.each do |klass,events|
             events.each do |event,hooks|
-              logger.info "Finished registering #{hooks.size} hooks for #{Host::Base.to_s}##{event}"
+              logger.info "Finished registering #{hooks.size} hooks for #{klass.to_s}##{event}"
               hooks.sort!
             end
           end
