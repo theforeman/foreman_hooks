@@ -1,3 +1,5 @@
+require 'open3'
+
 module ForemanHooks::Util
   extend ActiveSupport::Concern
 
@@ -75,13 +77,18 @@ module ForemanHooks::Util
   end
 
   def exec_hook_int(stdin_data, *args)
-    output = nil
-    IO.popen(args.push(:err=>[:child, :out]), mode='r+') do |io|
-      io.write(stdin_data)
-      io.close_write
-      output = io.read
+    output, status = if Open3.respond_to? :capture2e
+      Open3.capture2e(*args.push(:stdin_data => stdin_data))
+    else  # 1.8
+      Open3.popen3(*args) do |stdin,stdout,stderr|
+        stdin.write(stdin_data)
+        stdin.close
+        # we could still deadlock here, it'd ideally select() on stdout+err
+        output = stderr.read
+      end
+      [output, $?]
     end
     logger.debug "Hook output: #{output}" if output && !output.empty?
-    $?
+    status
   end
 end
