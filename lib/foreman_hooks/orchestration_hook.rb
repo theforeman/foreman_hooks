@@ -25,7 +25,7 @@ module ForemanHooks::OrchestrationHook
       logger.warn "#{self.class.to_s} doesn't support orchestration, can't run orchestration hooks: use Rails events instead"
     end
 
-    return unless hooks = find_hooks(self.class, event)
+    return unless hooks = ForemanHooks.find_hooks(self.class, event)
     logger.debug "Queueing #{hooks.size} hooks for #{self.class.to_s}##{event}"
 
     counter = 0
