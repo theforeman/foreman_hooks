@@ -49,7 +49,7 @@ module ForemanHooks
     def events(klass = nil)
       filtered = if klass
                    klass = klass.name if klass.kind_of? Class
-                   hooks.select { |k,e| k == klass }
+                   Hash[hooks.select { |k,e| k == klass }]
                  else
                    hooks
                  end
