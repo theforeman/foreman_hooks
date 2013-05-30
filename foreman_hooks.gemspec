@@ -1,8 +1,8 @@
 Gem::Specification.new do |s|
   s.name = "foreman_hooks"
 
-  s.version = "0.3.1"
-  s.date = "2013-04-07"
+  s.version = "0.3.2"
+  s.date = "2013-05-30"
 
   s.summary = "Run custom hook scripts on Foreman events"
   s.description = "Plugin engine for Foreman that enables running custom hook scripts on Foreman events"
