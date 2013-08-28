@@ -98,7 +98,7 @@ to read this with jgrep is provided in `examples/hook_functions.sh` and
 sourcing this utility script will be enough for most users.  Otherwise, you
 may want to ensure stdin is closed.
 
-    echo '{"host"=>{"name"=>"foo.example.com"}}' \
+    echo '{"host":{"name":"foo.example.com"}}' \
       | ~foreman/config/hooks/host/create/50_register_system.sh \
            create foo.example.com
 
