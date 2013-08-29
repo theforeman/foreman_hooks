@@ -18,5 +18,5 @@ Gem::Specification.new do |s|
     "README.md",
     "TODO"
   ]
-  s.files = `git ls-files`.split("\n")
+  s.files = `git ls-files`.split("\n") - Dir[".*", "Gem*", "*.gemspec"]
 end
