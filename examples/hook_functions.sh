@@ -15,7 +15,7 @@ HOOK_EVENT=$1
 # to_s representation of the object, e.g. host's fqdn
 HOOK_OBJECT=$2
 
-HOOK_OBJECT_FILE=$(mktemp foreman_hooks.XXXXXXXXXX)
+HOOK_OBJECT_FILE=$(mktemp -t foreman_hooks.XXXXXXXXXX)
 trap "rm -f $HOOK_OBJECT_FILE" EXIT
 cat > $HOOK_OBJECT_FILE
 
