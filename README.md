@@ -18,11 +18,7 @@ Or from git:
 
     gem 'foreman_hooks', :git => "https://github.com/domcleal/foreman_hooks.git"
 
-Regenerate Gemfile.lock:
-
-    cd ~foreman && sudo -u foreman bundle install
-
-To upgrade to newest version of the plugin:
+Regenerate Gemfile.lock or upgrade to the latest version of the plugin:
 
     cd ~foreman && sudo -u foreman bundle update foreman_hooks
 
