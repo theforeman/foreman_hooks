@@ -10,7 +10,10 @@ Foreman object, all with shell scripts.
 
 # Installation:
 
-Include in your `~foreman/bundler.d/foreman_hooks.rb`
+If you're using an RPM based installation, please use the packages provided in
+the plugin repos at http://yum.theforeman.org/plugins.
+
+For other setups, include in your `~foreman/bundler.d/foreman_hooks.rb`
 
     gem 'foreman_hooks'
 
@@ -43,7 +46,7 @@ become `host/managed` instead.
 Every object (or model in Rails terms) in Foreman can have hooks.  Check
 `~foreman/app/models` for the full list, but these are the interesting ones:
 
-* `host` (or `host/managed` in Foreman 1.2)
+* `host/managed` (or `host` in Foreman 1.1)
 * `report`
 
 ## Orchestration events
