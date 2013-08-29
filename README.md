@@ -34,12 +34,11 @@ with a subdirectory for the object, then a subdirectory for the event name.
 
 Examples:
 
-    ~foreman/config/hooks/host/create/50_register_system.sh
-    ~foreman/config/hooks/host/destroy/15_cleanup_database.sh
+    ~foreman/config/hooks/host/managed/create/50_register_system.sh
+    ~foreman/config/hooks/host/managed/destroy/15_cleanup_database.sh
     ~foreman/config/hooks/smart_proxy/after_create/01_email_operations.sh
 
-In Foreman 1.1, all hosts are `host` but in Foreman 1.2, managed hosts will
-become `host/managed` instead.
+(`host/managed` is for Foreman 1.2+, change to just `host` for Foreman 1.1)
 
 ## Objects / Models
 
@@ -78,8 +77,8 @@ documentation.
 
 The host object has two additional callbacks that you can use:
 
-* `host/after_build` triggers when a host is put into build mode
-* `host/before_provision` triggers when a host completes the OS install
+* `host/managed/after_build` triggers when a host is put into build mode
+* `host/managed/before_provision` triggers when a host completes the OS install
 
 ## Execution of hooks
 
@@ -90,7 +89,7 @@ The first argument is always the event name, enabling scripts to be symlinked
 into multiple event directories.  The second argument is the string
 representation of the object that was hooked, e.g. the hostname for a host.
 
-    ~foreman/config/hooks/host/create/50_register_system.sh create foo.example.com
+    ~foreman/config/hooks/host/managed/create/50_register_system.sh create foo.example.com
 
 A JSON representation of the hook object will be passed in on stdin.  A utility
 to read this with jgrep is provided in `examples/hook_functions.sh` and
@@ -98,7 +97,7 @@ sourcing this utility script will be enough for most users.  Otherwise, you
 may want to ensure stdin is closed.
 
     echo '{"host":{"name":"foo.example.com"}}' \
-      | ~foreman/config/hooks/host/create/50_register_system.sh \
+      | ~foreman/config/hooks/host/managed/create/50_register_system.sh \
            create foo.example.com
 
 Every hook within the event directory is executed in alphabetical order.  For
