@@ -65,6 +65,13 @@ module ForemanHooks
       filtered
     end
 
+    def attach_hook(klass, events)
+      if events.keys.detect { |event| ['create', 'update', 'destroy'].include? event }
+        klass.send(:include, ForemanHooks::OrchestrationHook) unless klass.ancestors.include?(ForemanHooks::OrchestrationHook)
+      end
+      klass.send(:include, ForemanHooks::CallbackHooks) unless klass.ancestors.include?(ForemanHooks::CallbackHooks)
+    end
+
     def logger; Rails.logger; end
   end
 end
@@ -74,11 +81,7 @@ module ActiveSupport::Dependencies
     def load_missing_constant_with_hooks(from_mod, constant_name)
       ret = load_missing_constant_without_hooks(from_mod, constant_name)
       ForemanHooks.hooks.each do |klass,events|
-        next unless ret.name == klass
-        if events.keys.detect { |event| ['create', 'update', 'destroy'].include? event }
-          ret.send(:include, ForemanHooks::OrchestrationHook) unless ret.ancestors.include?(ForemanHooks::OrchestrationHook)
-        end
-        ret.send(:include, ForemanHooks::CallbackHooks) unless ret.ancestors.include?(ForemanHooks::CallbackHooks)
+        ForemanHooks.attach_hook(ret, events) if ret.name == klass
       end
       ret
     end
