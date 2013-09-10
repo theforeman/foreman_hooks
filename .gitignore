@@ -1,4 +1,5 @@
 .rvmrc
+.ruby-*
 Gemfile.lock
 test/foreman_app
 .bundle

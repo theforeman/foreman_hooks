@@ -10,20 +10,14 @@ Foreman object, all with shell scripts.
 
 # Installation:
 
-If you're using an RPM based installation, please use the packages provided in
-the plugin repos at http://yum.theforeman.org/plugins.
+Please see the Foreman wiki for appropriate instructions:
 
-For other setups, include in your `~foreman/bundler.d/foreman_hooks.rb`
+* [Foreman: How to Install a Plugin](http://projects.theforeman.org/projects/foreman/wiki/How_to_Install_a_Plugin)
 
-    gem 'foreman_hooks'
+The gem name is "foreman_hooks".
 
-Or from git:
-
-    gem 'foreman_hooks', :git => "https://github.com/domcleal/foreman_hooks.git"
-
-Regenerate Gemfile.lock or upgrade to the latest version of the plugin:
-
-    cd ~foreman && sudo -u foreman bundle update foreman_hooks
+RPM users can install the "ruby193-rubygem-foreman_hooks" or
+"rubygem-foreman_hooks" packages.
 
 # Usage
 
