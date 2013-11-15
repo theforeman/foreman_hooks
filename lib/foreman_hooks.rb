@@ -4,6 +4,8 @@ module ForemanHooks
   require 'foreman_hooks/callback_hooks'
   require 'foreman_hooks/orchestration_hook'
 
+  class Error < RuntimeError; end
+
   class << self
     def hooks_root
       File.join(Rails.application.root, 'config', 'hooks')
