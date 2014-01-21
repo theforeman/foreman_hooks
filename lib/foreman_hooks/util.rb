@@ -11,9 +11,8 @@ module ForemanHooks::Util
                 exec_hook_int(self.to_json, *args)
               end.success?
 
-    unless success
-      logger.warn "Hook failure running `#{args.join(' ')}`: #{$?}"
-    end
+    # Raising here causes Foreman Orchestration to correctly show error bubble in GUI
+    raise ForemanHooks::Error.new "Hook failure running `#{args.join(' ')}`: #{$?}" unless success
     success
   end
 
