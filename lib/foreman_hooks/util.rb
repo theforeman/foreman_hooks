@@ -3,12 +3,32 @@ require 'open3'
 module ForemanHooks::Util
   extend ActiveSupport::Concern
 
+  def render_hook_type
+    case self
+      when Host::Managed
+        'host'
+      else
+        self.class.name.to_lower
+    end
+  end
+
+  def render_hook_json
+    # APIv2 has some pretty good templates.  We could extend them later in special cases.
+    # Wrap them in a root node for pre-1.4 compatibility
+    json = Rabl.render(self, "api/v2/#{render_hook_type.tableize}/show", :view_path => 'app/views', :format => :json)
+    %Q|{"#{render_hook_type}":#{json}}|
+  rescue => e
+    logger.warn "Unable to render #{self} (#{self.class}) using RABL: #{e.message}"
+    logger.debug e.backtrace.join("\n")
+    self.to_json
+  end
+
   def exec_hook(*args)
     logger.debug "Running hook: #{args.join(' ')}"
     success = if defined? Bundler && Bundler.responds_to(:with_clean_env)
-                Bundler.with_clean_env { exec_hook_int(self.to_json, *args) }
+                Bundler.with_clean_env { exec_hook_int(render_hook_json, *args) }
               else
-                exec_hook_int(self.to_json, *args)
+                exec_hook_int(render_hook_json, *args)
               end.success?
 
     # Raising here causes Foreman Orchestration to correctly show error bubble in GUI
