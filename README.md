@@ -110,6 +110,12 @@ to rollback its action - in this case the first argument will change as
 appropriate, so must be obeyed by the script (e.g. a "create" hook will be
 called with "destroy" if it has to be rolled back later).
 
+# More resources
+
+* [Extending Foreman quickly with hook scripts](http://m0dlx.com/blog/Extending_Foreman_quickly_with_hook_scripts.html)
+* [AWS VPC Buildout With Foreman Hooks for RDNS Creation](http://www.brian2.net/posts/foreman_hooks_aws_vpc/)
+* [Foreman <-> FreeIPA Integration Guide](https://bitbin.de/blog/2013/11/foreman-freeipa-integration-guide/)
+
 # Copyright
 
 Copyright (c) 2012-2013 Red Hat Inc.
