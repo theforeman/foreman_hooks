@@ -8,7 +8,7 @@ module ForemanHooks::Util
       when Host::Managed
         'host'
       else
-        self.class.name.to_lower
+        self.class.name.downcase
     end
   end
 
