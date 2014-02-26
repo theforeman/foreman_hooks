@@ -9,7 +9,7 @@ module ForemanHooks::CallbackHooks
       filter, name = event.to_s.split('_', 2)
       next unless name
 
-      set_callback name, "#{event}_hooks"
+      set_callback name.to_sym, filter.to_sym, "#{event}_hooks".to_sym
       define_method("#{event}_hooks") do
         Rails.logger.debug "Observed #{event} hook on #{self}"
         return unless hooks = ForemanHooks.find_hooks(self.class, event)
