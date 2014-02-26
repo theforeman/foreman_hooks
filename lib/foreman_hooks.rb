@@ -55,8 +55,7 @@ module ForemanHooks
                  else
                    hooks
                  end
-      @events = filtered.values.map(&:keys).flatten.uniq.map(&:to_sym) unless @events
-      @events
+      filtered.values.map(&:keys).flatten.uniq.map(&:to_sym)
     end
 
     def find_hooks(klass, event)
