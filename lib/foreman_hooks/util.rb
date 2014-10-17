@@ -8,14 +8,28 @@ module ForemanHooks::Util
       when Host::Managed
         'host'
       else
-        self.class.name.downcase
+        self.base_class.name.demodulize.tableize
     end
   end
 
   def render_hook_json
     # APIv2 has some pretty good templates.  We could extend them later in special cases.
     # Wrap them in a root node for pre-1.4 compatibility
-    json = Rabl.render(self, "api/v2/#{render_hook_type.tableize}/show", :view_path => 'app/views', :format => :json)
+    paths = [File.join("app","views")]
+
+    # Foreman 1.7 added support for paths for plugin metadata.
+    # If that method exists, then use the path to expose the views
+    # for the plugins.
+    if Foreman::Plugin.method_defined? :path
+      Foreman::Plugin.registered_plugins.each do |key, plugin|
+        if plugin.path.present?
+          paths << File.join(plugin.path, "app", "views")
+          paths << File.join(plugin.path, "app", "views", self.class.parent.to_s)
+        end
+      end
+    end
+
+    json = Rabl.render(self, "api/v2/#{render_hook_type}/show", :view_path => paths, :format => :json)
     %Q|{"#{render_hook_type}":#{json}}|
   rescue => e
     logger.warn "Unable to render #{self} (#{self.class}) using RABL: #{e.message}"
