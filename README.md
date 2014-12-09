@@ -34,6 +34,19 @@ Examples:
 
 (`host/managed` is for Foreman 1.2+, change to just `host` for Foreman 1.1)
 
+## SELinux notes
+
+When using official installation on Red Hat and Fedora system, note that
+SELinux is turned on by default and Foreman is running in confined mode. Make
+sure that hook scripts has the correct context (`foreman_hook_t` on
+RHEL7+/Fedora 19+ or `bin_t` on RHEL6):
+
+    restorecon -RvF /usr/share/foreman/config/hooks
+
+Also keep in mind that the script is running confined, therefore some actions
+might be denied by SELinux. Check audit.log and use audit2allow and other
+tools when writing scripts.
+
 ## Objects / Models
 
 Every object (or model in Rails terms) in Foreman can have hooks.  Check
