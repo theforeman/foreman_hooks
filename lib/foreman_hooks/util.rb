@@ -25,14 +25,13 @@ module ForemanHooks::Util
 
   def exec_hook(*args)
     logger.debug "Running hook: #{args.join(' ')}"
-    success = if defined? Bundler && Bundler.responds_to(:with_clean_env)
-                Bundler.with_clean_env { exec_hook_int(render_hook_json, *args) }
-              else
-                exec_hook_int(render_hook_json, *args)
-              end.success?
-
+    success, output = if defined? Bundler && Bundler.responds_to(:with_clean_env)
+                        Bundler.with_clean_env { exec_hook_int(render_hook_json, *args) }
+                      else
+                        exec_hook_int(render_hook_json, *args)
+                      end
     # Raising here causes Foreman Orchestration to correctly show error bubble in GUI
-    raise ForemanHooks::Error.new "Hook failure running `#{args.join(' ')}`: #{$?}" unless success
+    raise ForemanHooks::Error.new "Hook failure running `#{args.join(' ')}`: #{$?} #{output}" unless success
     success
   end
 
@@ -49,6 +48,6 @@ module ForemanHooks::Util
       [output, $?]
     end
     logger.debug "Hook output: #{output}" if output && !output.empty?
-    status
+    [status.success?, output]
   end
 end
