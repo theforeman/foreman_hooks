@@ -36,6 +36,7 @@ module ForemanHooks::Util
   end
 
   def exec_hook_int(stdin_data, *args)
+    args.map!(&:to_s)
     output, status = if Open3.respond_to? :capture2e
       Open3.capture2e(*args.push(:stdin_data => stdin_data))
     else  # 1.8
