@@ -4,9 +4,11 @@ module ForemanHooks::Util
   extend ActiveSupport::Concern
 
   def render_hook_type
-    case self
-      when Host::Managed
+    case self.class.name
+      when "Host::Managed"
         'host'
+      when "Host::Discovered"
+        'discovered_host'
       else
         self.class.name.downcase
     end
