@@ -1,3 +1,5 @@
+require "date"
+
 Gem::Specification.new do |s|
   s.name = "foreman_hooks"
 
