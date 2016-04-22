@@ -1,5 +1,5 @@
 module ForemanHooks
-  require 'foreman_hooks/engine' if defined?(Rails) && Rails::VERSION::MAJOR == 3
+  require 'foreman_hooks/engine'
   require 'foreman_hooks/util'
   require 'foreman_hooks/callback_hooks'
   require 'foreman_hooks/orchestration_hook'
