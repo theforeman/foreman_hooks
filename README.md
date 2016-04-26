@@ -46,8 +46,11 @@ Every object (or model in Rails terms) in Foreman can have hooks.  Check
 
 To generate a list of *all* possible models, issue the following command:
 
-    # foreman-rake console
-    > ActiveRecord::Base.descendants.collect(&:name).collect(&:underscore).sort
+    # foreman-rake hooks:objects
+
+and to get events for a listed object (e.g. `host/managed`):
+
+    # foreman-rake hooks:events[host/managed]
 
 ## Orchestration events
 
