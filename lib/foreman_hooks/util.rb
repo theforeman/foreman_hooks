@@ -9,6 +9,8 @@ module ForemanHooks::Util
         'host'
       when "Host::Discovered"
         'discovered_host'
+      when "Audited::Adapters::ActiveRecord::Audit"
+        'audit'
       else
         self.class.name.downcase
     end
