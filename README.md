@@ -24,7 +24,7 @@ RPM users can install the "ruby193-rubygem-foreman_hooks" or
 Hooks are stored in `/usr/share/foreman/config/hooks` (`~foreman/config/hooks`)
 with a subdirectory for the object, then a subdirectory for the event name.
 
-    ~foreman/config/hooks/$OBJECT/$EVENT/$HOOK_SCRIPT
+    ~foreman/config/hooks/[OBJECT]/[EVENT]/[HOOK_SCRIPT]
 
 Examples:
 
@@ -33,19 +33,6 @@ Examples:
     ~foreman/config/hooks/smart_proxy/after_create/01_email_operations.sh
     ~foreman/config/hooks/audited/adapters/active_record/audit/after_create/01_syslog.sh
 
-## SELinux notes
-
-When using official installation on Red Hat and Fedora system, note that
-SELinux is turned on by default and Foreman is running in confined mode. Make
-sure that hook scripts has the correct context (`foreman_hook_t` on
-RHEL7+/Fedora 19+ or `bin_t` on RHEL6):
-
-    restorecon -RvF /usr/share/foreman/config/hooks
-
-Also keep in mind that the script is running confined, therefore some actions
-might be denied by SELinux. Check audit.log and use audit2allow and other
-tools when writing scripts.
-
 ## Objects / Models
 
 Every object (or model in Rails terms) in Foreman can have hooks.  Check
@@ -53,13 +40,23 @@ Every object (or model in Rails terms) in Foreman can have hooks.  Check
 
 * `host/managed` (or `host` in Foreman 1.1)
 * `report`
+* `nic/managed`
+* `hostgroup`
+* `user`
+
+To generate a list of *all* possible models, issue the following command:
+
+    # foreman-rake console
+    > ActiveRecord::Base.descendants.collect(&:name).collect(&:underscore).sort
 
 ## Orchestration events
 
 Foreman supports orchestration tasks for hosts and NICs (each network
 interface) which happen when the object is created, updated and destroyed.
 These tasks are shown to the user in the UI and if they fail, will
-automatically trigger a rollback of the action.
+automatically trigger a rollback of the action. A rollback is performed as
+an opposite action (e.g. for DHCP record creation a rollback action is
+destroy).
 
 To add hooks to these, use these event names:
 
@@ -67,11 +64,15 @@ To add hooks to these, use these event names:
 * `update`
 * `destroy`
 
+Orchestration hooks can be given a priority (see below), therefore it is
+possible to order them before or after built-in orchestration steps (before
+DNS record is created for example).
+
 ## Rails events
 
-For hooks on anything apart from hosts (which support orchestration, as above)
-then the standard Rails events will be needed.  These are the most interesting
-events provided:
+For hooks on anything apart from hosts or NICs (which support orchestration,
+as above) then the standard Rails events will be needed. These are the most
+interesting events provided:
 
 * `after_create`, `before_create`
 * `after_destroy`, `before_destroy`
@@ -100,7 +101,7 @@ representation of the object that was hooked, e.g. the hostname for a host.
 A JSON representation of the hook object will be passed in on stdin.  A utility
 to read this with jgrep is provided in `examples/hook_functions.sh` and
 sourcing this utility script will be enough for most users.  Otherwise, you
-may want to ensure stdin is closed.
+may want to ensure stdin is closed to prevent pipe buffer from filling.
 
     echo '{"host":{"name":"foo.example.com"}}' \
       | ~foreman/config/hooks/host/managed/create/50_register_system.sh \
@@ -121,6 +122,26 @@ occur.  If another orchestration action fails, the hook might be called again
 to rollback its action - in this case the first argument will change as
 appropriate, so must be obeyed by the script (e.g. a "create" hook will be
 called with "destroy" if it has to be rolled back later).
+
+## Transactions
+
+Most hooks are triggered during database transaction. This can cause
+conflicting updates when hook scripts emits database updates via Foreman CLI
+or API. It is recommended to avoid this behavior and write a Foreman plugin
+instead.
+
+## SELinux notes
+
+When using official installation on Red Hat and Fedora system, note that
+SELinux is turned on by default and Foreman is running in confined mode. Make
+sure that hook scripts has the correct context (`foreman_hook_t` on
+RHEL7+/Fedora 19+ or `bin_t` on RHEL6):
+
+    restorecon -RvF /usr/share/foreman/config/hooks
+
+Also keep in mind that the script is running confined, therefore some actions
+might be denied by SELinux. Check audit.log and use audit2allow and other
+tools when writing scripts.
 
 # More resources
 

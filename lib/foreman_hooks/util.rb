@@ -44,8 +44,12 @@ module ForemanHooks::Util
       Open3.capture2e(*args.push(:stdin_data => stdin_data))
     else  # 1.8
       Open3.popen3(*args) do |stdin,stdout,stderr|
-        stdin.write(stdin_data)
-        stdin.close
+        begin
+          stdin.write(stdin_data)
+          stdin.close
+        rescue Errno::EPIPE
+          logger.debug "Foreman hook input data skipped, closed pipe"
+        end
         # we could still deadlock here, it'd ideally select() on stdout+err
         output = stderr.read
       end
