@@ -39,7 +39,7 @@ module ForemanHooks
         @hooks = discover_hooks
         @hooks.each do |klass,events|
           events.each do |event,hooks|
-            logger.info "Finished registering #{hooks.size} hooks for #{klass}##{event}"
+            logger.info "Finished discovering #{hooks.size} hooks for #{klass}##{event}"
             hooks.sort!
           end
         end
@@ -68,9 +68,16 @@ module ForemanHooks
 
     def attach_hook(klass, events)
       if events.keys.detect { |event| ['create', 'update', 'destroy'].include? event }
-        klass.send(:include, ForemanHooks::OrchestrationHook) unless klass.ancestors.include?(ForemanHooks::OrchestrationHook)
+        unless klass.ancestors.include?(ForemanHooks::OrchestrationHook)
+          logger.debug "Extending #{klass} with foreman_hooks orchestration hooking support"
+          klass.send(:include, ForemanHooks::OrchestrationHook)
+        end
       end
-      klass.send(:include, ForemanHooks::CallbackHooks) unless klass.ancestors.include?(ForemanHooks::CallbackHooks)
+
+      unless klass.ancestors.include?(ForemanHooks::CallbackHooks)
+        logger.debug "Extending #{klass} with foreman_hooks Rails hooking support"
+        klass.send(:include, ForemanHooks::CallbackHooks)
+      end
     end
 
     def logger; Rails.logger; end
