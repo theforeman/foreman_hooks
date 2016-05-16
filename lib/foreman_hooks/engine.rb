@@ -8,7 +8,7 @@ module ForemanHooks
 
     initializer 'foreman_hooks.register_plugin', :after=> :finisher_hook do |app|
       Foreman::Plugin.register :foreman_hooks do
-      end if defined? Foreman::Plugin
+      end
     end
   end
 end
