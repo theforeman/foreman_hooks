@@ -19,7 +19,7 @@ module ForemanHooks::Util
   def render_hook_json
     # APIv2 has some pretty good templates.  We could extend them later in special cases.
     # Wrap them in a root node for pre-1.4 compatibility
-    view_path = Rails.root.join('app', 'views')
+    view_path = ActionController::Base.view_paths.collect(&:to_path)
     json = Rabl.render(self, "api/v2/#{render_hook_type.tableize}/show", :view_path => view_path, :format => :json)
     %Q|{"#{render_hook_type}":#{json}}|
   rescue => e
