@@ -87,7 +87,8 @@ documentation.
 
 The host object has two additional callbacks that you can use:
 
-* `host/managed/after_build` triggers when a host is put into build mode
+* `host/managed/after_build` triggers when a host is put into build mode (does
+  not trigger upon new host creation, even when build flag is set)
 * `host/managed/before_provision` triggers when a host completes the OS install
 
 ## Execution of hooks
