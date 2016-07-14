@@ -6,7 +6,7 @@ module ForemanHooks
       ForemanHooks.hooks.each { |klass,events| ForemanHooks.attach_hook(klass.constantize, events) }
     end
 
-    initializer 'foreman_hooks.register_plugin', :after=> :finisher_hook do |app|
+    initializer 'foreman_hooks.register_plugin', :before => :finisher_hook do |app|
       Foreman::Plugin.register :foreman_hooks do
       end
     end
