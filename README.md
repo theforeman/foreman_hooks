@@ -38,8 +38,8 @@ Examples:
 Every object (or model in Rails terms) in Foreman can have hooks.  Check
 `~foreman/app/models` for the full list, but these are the interesting ones:
 
-* `host/managed` (or `host` in Foreman 1.1)
-* `report`
+* `host/managed`
+* `config_report` (or `report` in Foreman 1.10 or older)
 * `nic/managed`
 * `hostgroup`
 * `user`
