@@ -16,7 +16,7 @@ Please see the Foreman wiki for appropriate instructions:
 
 The gem name is "foreman_hooks".
 
-RPM users can install the "ruby193-rubygem-foreman_hooks" or
+RPM users can install the "tfm-rubygem-foreman_hooks" or
 "rubygem-foreman_hooks" packages.
 
 # Usage
