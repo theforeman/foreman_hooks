@@ -116,6 +116,11 @@ orchestration hooks, an integer prefix in the hook filename will be used as
 the priority value, so influences where it's done in relation to DNS, DHCP, VM
 creation and other tasks.
 
+When testing hooks, don't rely on writing logs to /tmp or /var/tmp as you may
+not be able to see the contents. On modern systemd-based OSes, Apache (and
+Foreman) is run with a private temp directory to improve security - consider
+using `~foreman/tmp/` instead, or read `/tmp/systemd-private-*` as root.
+
 ## Hook failures and rollback
 
 If a hook fails (non-zero return code), the event is logged.  For Rails events,
