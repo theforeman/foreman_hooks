@@ -54,6 +54,11 @@ and to get events for a listed object (e.g. `host/managed`):
 
 ## Orchestration events
 
+_Only supported on these objects:_
+
+* _host/managed_
+* _nic/\*_
+
 Foreman supports orchestration tasks for hosts and NICs (each network
 interface) which happen when the object is created, updated and destroyed.
 These tasks are shown to the user in the UI and if they fail, will
@@ -67,11 +72,21 @@ To add hooks to these, use these event names:
 * `update`
 * `destroy`
 
-Orchestration hooks can be given a priority (see below), therefore it is
-possible to order them before or after built-in orchestration steps (before
-DNS record is created for example).
+Orchestration hooks can be given a priority by prefixing the filename with the
+priority number, therefore it is possible to order them before or after
+built-in orchestration steps (before DNS records are created for example).
+Existing common priority levels are:
+
+* _2_: Set up compute instance (create VM)
+* _10_: Create DNS record
+* _10_: Create DHCP reservation
+* _20_: Deploy TFTP configs
+* _50_: Create realm entry
+* _1000_: Power up compute instance
 
 ## Rails events
+
+_Supported on all object types._
 
 For hooks on anything apart from hosts or NICs (which support orchestration,
 as above) then the standard Rails events will be needed. These are the most
