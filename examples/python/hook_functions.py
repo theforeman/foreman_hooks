@@ -2,8 +2,9 @@
 #######
 ## To allow this module to be imported by other triggers
 ## please place this file at /usr/share/foreman/config/
-## and execute the command below:
+## and execute the commands below:
 ## $ touch /usr/share/foreman/config/__init__.py
+## $ chmod +x /usr/share/foreman/config/hook_functions.py
 ########
 import json
 import os

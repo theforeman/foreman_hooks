@@ -16,14 +16,12 @@ hostname = HOOK_JSON.get('host').get('name')
 mac_address = HOOK_JSON.get('host').get('mac')
 operating_system = HOOK_JSON.get('host').get('operatingsystem_name')
 
-
 # execute logger command
 subprocess.call(['logger',
                  'System', hostname,
                  'MAC', mac_address,
                  'OS:', operating_system,
                  'created successfully'])
-
 
 # for troubleshooting purposes, you can save the received data to a file
 # to parse the information to be used on the trigger.
