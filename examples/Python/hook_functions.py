@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+#######
+## To allow this module to be imported by other triggers
+## please place this file at /usr/share/foreman/config/
+## and execute the command below:
+## $ touch /usr/share/foreman/config/__init__.py
+########
 import json
 import os
 import sys
