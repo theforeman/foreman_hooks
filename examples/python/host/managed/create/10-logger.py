@@ -15,15 +15,18 @@ HOOK_JSON = get_json_hook()
 cmd = ['logger']
 
 # read the information received
-hostname = HOOK_JSON.get('host').get('name')
-if hostname:
-    cmd.append('System:{0}'.format(hostname))
-mac_address = HOOK_JSON.get('host').get('mac')
-if mac_address:
-    cmd.append('MAC:{0}'.format(mac_address))
-operating_system = HOOK_JSON.get('host').get('operatingsystem_name')
-if operating_system:
-    cmd.append('OS:{0}'.format(operating_system))
+if HOOK_JSON.get('host'):
+    hostname = HOOK_JSON.get('host').get('name', None)
+    if hostname:
+        cmd.append('System:{0}'.format(hostname))
+
+    mac_address = HOOK_JSON.get('host').get('mac', None)
+    if mac_address:
+        cmd.append('MAC:{0}'.format(mac_address))
+
+    operating_system = HOOK_JSON.get('host').get('operatingsystem_name', None)
+    f operating_system:
+        md.append('OS:{0}'.format(operating_system))
 
 # execute logger command
 subprocess.call(cmd)
