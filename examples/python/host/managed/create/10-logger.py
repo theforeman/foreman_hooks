@@ -25,7 +25,7 @@ if HOOK_JSON.get('host'):
         cmd.append('MAC:{0}'.format(mac_address))
 
     operating_system = HOOK_JSON.get('host').get('operatingsystem_name', None)
-    f operating_system:
+    if operating_system:
         md.append('OS:{0}'.format(operating_system))
 
 # execute logger command
