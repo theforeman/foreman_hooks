@@ -12,17 +12,21 @@ PREFIX = "created_by_hook-{}".format(sys.argv[0].split('/')[-1])
 
 HOOK_JSON = get_json_hook()
 
+cmd = ['logger']
+
 # read the information received
 hostname = HOOK_JSON.get('host').get('name')
+if hostname:
+    cmd.append('System:{0}'.format(hostname))
 mac_address = HOOK_JSON.get('host').get('mac')
+if mac_address:
+    cmd.append('MAC:{0}'.format(mac_address))
 operating_system = HOOK_JSON.get('host').get('operatingsystem_name')
+if operating_system:
+    cmd.append('OS:{0}'.format(operating_system))
 
 # execute logger command
-subprocess.call(['logger',
-                 'System', hostname,
-                 'MAC', mac_address,
-                 'OS:', operating_system,
-                 'created successfully'])
+subprocess.call(cmd)
 
 # for troubleshooting purposes, you can save the received data to a file
 # to parse the information to be used on the trigger.
