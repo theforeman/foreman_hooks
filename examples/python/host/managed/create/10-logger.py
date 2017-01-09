@@ -26,7 +26,7 @@ if HOOK_JSON.get('host'):
 
     operating_system = HOOK_JSON.get('host').get('operatingsystem_name', None)
     if operating_system:
-        md.append('OS:{0}'.format(operating_system))
+        cmd.append('OS:{0}'.format(operating_system))
 
 # execute logger command
 subprocess.call(cmd)
