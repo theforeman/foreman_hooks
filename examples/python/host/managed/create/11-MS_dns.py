@@ -1,6 +1,6 @@
 #!/opt/rh/python27/root/usr/bin/python
 #### make sure the repository rhel-server-rhscl-7-rpms is enabled
-### yum install  libffi-devel python27-python-devel openssl-devel python27-python-pip -y
+### yum install  libffi-devel python27-python-devel openssl-devel python27-python-pip gcc -y
 ### /opt/rh/python27/root/usr/bin/pip install paramiko
 
 import sys
