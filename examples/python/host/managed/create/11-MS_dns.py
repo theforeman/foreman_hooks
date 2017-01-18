@@ -1,30 +1,44 @@
-#!/usr/bin/env python
+#!/opt/rh/python27/root/usr/bin/python
+#### make sure the repository rhel-server-rhscl-7-rpms is enabled
+### yum install  libffi-devel python27-python-devel openssl-devel python27-python-pip -y
+### /opt/rh/python27/root/usr/bin/pip install paramiko
+
 import sys
 import tempfile
-import subprocess
+import paramiko
 
 sys.path.append('/usr/share/foreman/config')
 from hook_functions import \
     (HOOK_EVENT, HOOK_OBJECT, HOOK_TEMP_DIR, get_json_hook)
 
 PREFIX = "created_by_hook-{}".format(sys.argv[0].split('/')[-1])
-
 HOOK_JSON = get_json_hook()
 
+# Windows information
+HOST = "10.12.211.107" #windows
+USER = "Administrator"
+PORT = 22
+PUBKEY = '/usr/share/foreman/.ssh/id_rsa'
+
 # read the information received
-domain = ".{0}".format(HOOK_JSON.get('host').get('domain'))
-hostname = HOOK_JSON.get('host').get('name').replace(domain, '')
+hostname = HOOK_JSON.get('host').get('name').split('.')[0]
 ip_addr = HOOK_JSON.get('host').get('ip')
 
-DNSCMD = "Add-DnsServerResourceRecordA -Name {0}" \
-         " -ZoneName example.com -AllowUpdateAny -IPv4Address {1}" \
-         " -CreatePtr".format(hostname, ip_addr)
+#CMD = "Add-DnsServerResourceRecordA -Name {0}" \
+#         " -ZoneName example.com -AllowUpdateAny -IPv4Address {1}" \
+#         " -CreatePtr".format(hostname, ip_addr)
 
-# execute logger command
-subprocess.call(['logger', 'Running', 'ssh user@example.com', DNSCMD])
 
-# run remote command
-subprocess.call(['ssh', 'user@example.com', DNSCMD])
+## troubleshooting command
+CMD = "New-Item C:\{0}.txt -type file".format(hostname)
+
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect(HOST, PORT, USER, key_filename=PUBKEY)
+
+# via PowerShell
+stdin, stdout, stderr = ssh.exec_command(CMD)
+ssh.close()
 
 # for troubleshooting purposes, you can save the received data to a file
 # to parse the information to be used on the trigger.
@@ -40,6 +54,8 @@ if dumpdata:
 
         # local variables
         fd.file.write("hostname:    %s\n" % hostname)
+        fd.file.write("stdout:      %s\n" % stdout.readlines())
+        fd.file.write("stderr:      %s\n" % stderr.readlines())
         fd.file.flush()
 
 sys.exit(0)
