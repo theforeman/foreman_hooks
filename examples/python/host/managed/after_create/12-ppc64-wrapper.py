@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # vim:ts=4:sw=4:et
 import os
+import socket
 import sys
 import requests
 import tempfile
@@ -17,7 +18,7 @@ HOOK_JSON = get_json_hook()
 # satellite API queries
 USERNAME = 'admin'
 PASSWORD = 'redhat00'
-BASE_URL = 'https://sat6mmello.usersys.redhat.com/api/{0}'
+BASE_URL = 'https://' + socket.gethostname() + '/api/{0}'
 
 # tftp macros
 TFTP_PXELINUX_ROOT_CFG="/var/lib/tftpboot/pxelinux.cfg"
