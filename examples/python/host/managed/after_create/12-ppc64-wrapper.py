@@ -65,7 +65,6 @@ def process_pxelinux_cfg():
 
     # lookup for file to process
     mac_addr = "01-{0}".format(HOOK_JSON.get('host').get('mac').replace(':', '-'))
-    files = os.listdir(TFTP_PXELINUX_ROOT_CFG)
     for f in os.listdir(TFTP_PXELINUX_ROOT_CFG):
         if mac_addr == f:
             tftp_orig = os.path.join(TFTP_PXELINUX_ROOT_CFG, f)
