@@ -128,7 +128,7 @@ process_pxelinux_cfg()
 # for troubleshooting purposes, you can save the received data to a file
 # to parse the information to be used on the trigger.
 # To accomplish it, set the variable dumpdata to True
-dumpdata = True
+dumpdata = False
 if dumpdata:
     with tempfile.NamedTemporaryFile(dir=HOOK_TEMP_DIR,
                                      delete=False,
