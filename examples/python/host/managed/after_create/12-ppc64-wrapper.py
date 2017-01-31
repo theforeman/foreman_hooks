@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 # vim:ts=4:sw=4:et
 import os
-import re
 import sys
 import requests
-import urllib3
 import tempfile
 
 sys.path.append('/usr/share/foreman/config')
@@ -34,14 +32,6 @@ menuentry 'Install Red Hat Enteprise Linux for Power' {
 }
 """
 
-def grab_all_pxelinux_configs(directory=TFTP_PXELINUX_ROOT_CFG):
-    tftp_files = []
-    mac_format = re.compile(ur'((?:(\d{1,2}|[a-fA-F]{1,2}){2})(?::|-*)){6}')
-    for f in os.listdir(directory):
-        if re.findall(mac_format, f):
-            tftp_files.append(f)
-    return tftp_files
-
 def file_exists(cfg_file):
     if os.path.isfile(cfg_file):
         return True
@@ -64,43 +54,56 @@ def subnet_details(subnet_id, organization_id):
         return dns_primary, network, gateway
     return None
 
-def process_pxelinux_cfg(tftp_files):
+def process_pxelinux_cfg():
+
     content = None
-    for f in tftp_files:
-        fpath = os.path.join(TFTP_PXELINUX_ROOT_CFG, f)
-        if file_exists(fpath):
-            with open(fpath, mode='ro') as fd:
+    tftp_orig = None
+
+    if not HOOK_JSON.get('host'):
+        raise
+
+    # lookup for file to process
+    mac_addr = "01-{0}".format(HOOK_JSON.get('host').get('mac').replace(':', '-'))
+    files = os.listdir(TFTP_PXELINUX_ROOT_CFG)
+    for f in os.listdir(TFTP_PXELINUX_ROOT_CFG):
+        if mac_addr == f:
+            tftp_orig = os.path.join(TFTP_PXELINUX_ROOT_CFG, f)
+            with open(tftp_orig, mode='ro') as fd:
                 content = fd.readlines()
+            break
 
-        if content:
-            for line in content:
-                if "KERNEL" in line:
-                    kernel_arg = line.split()[-1]
-                    grub_aux = GRUB2_TEMPLATE.replace("KERNEL_HERE", kernel_arg)
+    if content:
+        for line in content:
+            if "KERNEL" in line:
+                kernel_arg = line.split()[-1]
+                grub_aux = GRUB2_TEMPLATE.replace("KERNEL_HERE", kernel_arg)
 
-                if "initrd" in line:
-                    initrd_arg = line.split()[1].split('=')[-1]
-                    boot_arg = line.split()[-3:]
-                    boot_arg = ' '.join(boot_arg).replace('network', '').replace('ks.sendmac', '')
-                    grub_aux = grub_aux.replace("INITRD_HERE", initrd_arg)
-                    grub_aux = grub_aux.replace("BOOT_PARAM", boot_arg)
+            if "initrd" in line:
+                initrd_arg = line.split()[1].split('=')[-1]
+                boot_arg = line.split()[-3:]
+                boot_arg = ' '.join(boot_arg).replace('network', '').replace('ks.sendmac', '')
+                grub_aux = grub_aux.replace("INITRD_HERE", initrd_arg)
+                grub_aux = grub_aux.replace("BOOT_PARAM", boot_arg)
 
-            # read the information received
-            if HOOK_JSON.get('host'):
-                hostname = HOOK_JSON.get('host').get('name', None)
-                if hostname:
-                    grub_aux = grub_aux.replace("HOSTNAME_CMD", hostname)
+        # grab hostname
+        hostname = HOOK_JSON.get('host').get('name', None)
+        if hostname:
+            grub_aux = grub_aux.replace("HOSTNAME_CMD", hostname)
 
-                if HOOK_JSON.get('host').get('interfaces'):
-                    for eth in HOOK_JSON.get('host').get('interfaces'):
-                        if eth.get('provision'):
-                            nic = eth.get('identifier')
-                            ip = eth.get('ip')
-                    if ip:
-                        grub_aux = grub_aux.replace("IP_CMD", ip)
+        # grab network information
+        net_interfaces = HOOK_JSON.get('host').get('interfaces')
+        for eth in net_interfaces:
+            if eth.get('provision'):
+                nic = eth.get('identifier')
+                ip = eth.get('ip')
 
-                    if nic:
-                        grub_aux = grub_aux.replace("NIC_CMD", nic)
+                # replaces IP address
+                if ip:
+                    grub_aux = grub_aux.replace("IP_CMD", ip)
+
+                # replaces NIC
+                if nic:
+                    grub_aux = grub_aux.replace("NIC_CMD", nic)
 
                 try:
                     dns_primary, network, gateway = subnet_details(
@@ -117,8 +120,8 @@ def process_pxelinux_cfg(tftp_files):
                 grub_cfg.write(grub_aux)
 
 # calls script
-pxefiles = grab_all_pxelinux_configs()
-process_pxelinux_cfg(pxefiles)
+#import rpdb; rpdb.set_trace()
+process_pxelinux_cfg()
 
 
 # for troubleshooting purposes, you can save the received data to a file
