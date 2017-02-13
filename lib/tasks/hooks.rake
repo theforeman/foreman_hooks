@@ -1,6 +1,7 @@
 namespace :hooks do
   desc 'Print a list of object names that can be hooked'
   task :objects => :environment do
+    Rails.application.config.eager_load_namespaces.each(&:eager_load!)
     puts ActiveRecord::Base.descendants.collect(&:name).collect(&:underscore).sort
   end
 
