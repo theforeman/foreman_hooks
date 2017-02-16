@@ -13,8 +13,18 @@ namespace :hooks do
               fail("Unknown model #{args[:object]}, run hooks:objects to get a list (#{e.message})")
             end
 
+    # 1. List default ActiveRecord callbacks
     events = ActiveRecord::Callbacks::CALLBACKS.map(&:to_s).reject { |e| e.start_with?('around_') }
+
+    # 2. List Foreman orchestration callbacks
     events.concat(['create', 'destroy', 'update']) if model.included_modules.include?(Orchestration)
+
+    # 3. List custom define_callbacks/define_model_callbacks
+    callbacks = model.methods.map { |m| $1 if m =~ /\A_([a-z]\w+)_callbacks\z/ }.compact
+    # ignore callbacks that are in the AR default list
+    callbacks.delete_if { |c| events.any? { |e| e.end_with?("_#{c}") } }
+    callbacks.each { |c| events.push("before_#{c}", "after_#{c}") }
+
     puts events.sort
   end
 end
