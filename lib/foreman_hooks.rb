@@ -1,6 +1,7 @@
 module ForemanHooks
   require 'foreman_hooks/engine'
   require 'foreman_hooks/util'
+  require 'foreman_hooks/as_dependencies_hook'
   require 'foreman_hooks/callback_hooks'
   require 'foreman_hooks/orchestration_hook'
 
@@ -81,19 +82,5 @@ module ForemanHooks
     end
 
     def logger; Rails.logger; end
-  end
-end
-
-module ActiveSupport::Dependencies
-  class << self
-    def load_missing_constant_with_hooks(from_mod, constant_name)
-      ret = load_missing_constant_without_hooks(from_mod, constant_name)
-      ForemanHooks.hooks.each do |klass,events|
-        ForemanHooks.attach_hook(ret, events) if ret.name == klass
-      end
-      ret
-    end
-
-    alias_method_chain :load_missing_constant, :hooks
   end
 end
