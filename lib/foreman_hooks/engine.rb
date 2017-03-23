@@ -2,6 +2,8 @@ require 'foreman_hooks'
 
 module ForemanHooks
   class Engine < ::Rails::Engine
+    engine_name 'foreman_hooks'
+
     config.to_prepare do
       ForemanHooks.hooks.each do |klass,events|
         begin
