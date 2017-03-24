@@ -9,5 +9,5 @@ module ForemanHooks
     end
   end
 
-  ActiveSupport::Dependencies.singleton_class.prepend ASDependenciesHook
+  ActiveSupport::Dependencies.singleton_class.send(:prepend, ASDependenciesHook)
 end
