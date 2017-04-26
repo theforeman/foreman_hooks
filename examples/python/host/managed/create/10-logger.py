@@ -3,7 +3,7 @@ import sys
 import tempfile
 import subprocess
 
-sys.path.append('/usr/share/foreman/config')
+sys.path.append('/usr/share/foreman-community/hooks')
 
 from hook_functions import \
   (HOOK_EVENT, HOOK_OBJECT, HOOK_TEMP_DIR, get_json_hook)
