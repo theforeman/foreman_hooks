@@ -20,7 +20,8 @@ module ForemanHooks::Util
     # APIv2 has some pretty good templates.  We could extend them later in special cases.
     # Wrap them in a root node for pre-1.4 compatibility
     view_path = ActionController::Base.view_paths.collect(&:to_path)
-    json = Rabl.render(self, "api/v2/#{render_hook_type.tableize}/show", :view_path => view_path, :format => :json)
+    json = Rabl.render(self, "api/v2/#{render_hook_type.tableize}/show",
+                       view_path: view_path, format: :json, scope: RablScope.new)
     %Q|{"#{render_hook_type}":#{json}}|
   rescue => e
     logger.warn "Unable to render #{self} (#{self.class}) using RABL: #{e.message}"
@@ -59,5 +60,18 @@ module ForemanHooks::Util
     end
     logger.debug "Hook output: #{output}" if output && !output.empty?
     [status.success?, output]
+  end
+
+  class RablScope
+    def initialize
+      # Used by api/v2/hosts/main.json.yaml to include parameter lists
+      @all_parameters = true
+      @parameters = true
+    end
+
+    def params
+      # Used by app/views/api/v2/common/show_hidden.json.rabl to show hidden parameter values (#17653)
+      { 'show_hidden' => true, 'show_hidden_parameters' => true }
+    end
   end
 end
