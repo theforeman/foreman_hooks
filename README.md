@@ -32,7 +32,7 @@ Examples:
     ~foreman/config/hooks/host/managed/create/50_register_system.sh
     ~foreman/config/hooks/host/managed/destroy/15_cleanup_database.sh
     ~foreman/config/hooks/smart_proxy/after_create/01_email_operations.sh
-    ~foreman/config/hooks/audited/adapters/active_record/audit/after_create/01_syslog.sh
+    ~foreman/config/hooks/audited/audit/after_create/01_syslog.sh
 
 After adding or removing hooks, restart the Foreman server to update the list
 of known hooks (usually `apache2` or `httpd` when using Passenger, or
