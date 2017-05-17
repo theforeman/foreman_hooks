@@ -30,6 +30,11 @@ module ForemanHooks::Util
   end
 
   def exec_hook(*args)
+    unless File.executable?(args.first)
+      logger.warn("Hook #{args.first} no longer exists or isn't executable, so skipping execution of the hook. The server should be restarted after adding or removing hooks.")
+      return true
+    end
+
     logger.debug "Running hook: #{args.join(' ')}"
     success, output = if defined? Bundler && Bundler.responds_to(:with_clean_env)
                         Bundler.with_clean_env { exec_hook_int(render_hook_json, *args) }
