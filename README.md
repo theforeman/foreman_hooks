@@ -17,7 +17,8 @@ Please see the Foreman wiki for appropriate instructions:
 The gem name is "foreman_hooks".
 
 RPM users can install the "tfm-rubygem-foreman_hooks" or
-"rubygem-foreman_hooks" packages.
+"rubygem-foreman_hooks" packages. Debian/Ubuntu users can install the
+"ruby-foreman-hooks" package.
 
 # Usage
 
@@ -32,6 +33,10 @@ Examples:
     ~foreman/config/hooks/host/managed/destroy/15_cleanup_database.sh
     ~foreman/config/hooks/smart_proxy/after_create/01_email_operations.sh
     ~foreman/config/hooks/audited/adapters/active_record/audit/after_create/01_syslog.sh
+
+After adding or removing hooks, restart the Foreman server to update the list
+of known hooks (usually `apache2` or `httpd` when using Passenger, or
+`touch ~foreman/tmp/restart.txt`).
 
 ## Objects / Models
 
@@ -147,6 +152,54 @@ to rollback its action - in this case the first argument will change as
 appropriate, so must be obeyed by the script (e.g. a "create" hook will be
 called with "destroy" if it has to be rolled back later).
 
+## Logging
+
+Entries are logged at application startup and during execution of hooks, but
+most will be at 'debug' level and may use the 'sql' logger. Enable this in
+Foreman's `/etc/foreman/settings.yaml`:
+
+```yaml
+:logging:
+  :level: debug
+:loggers:
+  :sql:
+    :enabled: true
+```
+
+See [Foreman manual: Debugging](https://theforeman.org/manuals/latest/index.html#7.2Debugging)
+for full details.
+
+Enabling debugging and searching the Foreman log file (`/var/log/foreman/production.log`)
+for the word "hook" will find all relevant log entries.
+
+### Hook discovery and setup
+
+Expect to see these entries when the server starts:
+
+* `Found hook to Host::Managed#create, filename 01_example` - for each
+  executable hook script in the correct location
+* `Finished discovering 3 hooks for Host::Managed#create` - for each unique
+  event with hook scripts
+* `Extending Host::Managed with foreman_hooks orchestration hooking support` -
+  if any orchestration (create/update/destroy) hooks exist for that object
+* `Extending Host::Managed with foreman_hooks Rails hooking support` - if any
+  Rails events hooks exist for that object
+* `Created hook method after_create on Host::Managed` - for each type of Rails
+  event that has hooks
+
+### Running hooks
+
+Expect to see these entries logged when a hooked action occurs:
+
+* `Observed after_create hook on test.example.com` when a registered Rails
+  event occurs, hook will then execute immediately
+* `Queuing 3 hooks for Host::Managed#create` when an orchestration action is
+  being set up (hook will be executed later during orchestration)
+* `Queuing hook 01_example for Host::Managed#create at priority 01` for each
+  hook registered when setting up an orchestration action
+* `Running hook: /example/config/hooks/host/managed/create/01_example create test.example.com`
+  as the hook (orchestration or Rails event) is executed
+
 ## Transactions
 
 Most hooks are triggered during database transaction. This can cause
@@ -169,6 +222,7 @@ tools when writing scripts.
 
 # More resources
 
+* [foreman\_hooks issue tracker](https://github.com/theforeman/foreman_hooks/issues)
 * [Extending Foreman quickly with hook scripts](http://m0dlx.com/blog/Extending_Foreman_quickly_with_hook_scripts.html)
 * [AWS VPC Buildout With Foreman Hooks for RDNS Creation](http://www.brian2.net/posts/foreman_hooks_aws_vpc/)
 * [Foreman <-> FreeIPA Integration Guide](https://bitbin.de/blog/2013/11/foreman-freeipa-integration-guide/)
@@ -176,7 +230,7 @@ tools when writing scripts.
 
 # Copyright
 
-Copyright (c) 2012-2013 Red Hat Inc.
+Copyright (c) 2012-2017 Dominic Cleal
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

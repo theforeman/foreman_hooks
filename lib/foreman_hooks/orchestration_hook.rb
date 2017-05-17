@@ -27,7 +27,7 @@ module ForemanHooks::OrchestrationHook
     end
 
     return unless hooks = ForemanHooks.find_hooks(self.class, event)
-    logger.debug "Queueing #{hooks.size} hooks for #{self.class.to_s}##{event}"
+    logger.debug "Queuing #{hooks.size} hooks for #{self.class.to_s}##{event}"
 
     counter = 0
     hooks.each do |filename|
