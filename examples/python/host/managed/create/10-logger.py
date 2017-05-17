@@ -5,7 +5,7 @@ import subprocess
 
 sys.path.append('/usr/share/foreman-community/hooks')
 
-from hook_functions import \
+from functions import \
   (HOOK_EVENT, HOOK_OBJECT, HOOK_TEMP_DIR, get_json_hook)
 
 PREFIX = "created_by_hook-{}".format(sys.argv[0].split('/')[-1])

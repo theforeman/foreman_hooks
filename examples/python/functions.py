@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 #######
 # To allow this module to be imported by other triggers
-# please place this file at /usr/share/foreman/config/
-# and execute the commands below:
+# execute the commands below:
 # $ mkdir -p /usr/share/foreman-community/hooks
 # $ touch /usr/share/foreman-community/hooks/__init__.py
-# $ chmod +x /usr/share/foreman-community/hooks/functions.py
+# $ cp functions.py /usr/share/foreman-community/hooks/
 ########
 import json
 import sys
