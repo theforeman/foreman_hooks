@@ -35,6 +35,10 @@ module ForemanHooks::Util
       return true
     end
 
+    # Add current Foreman user loginname as argument
+    user = User.current.login
+    args.push(user)
+
     logger.debug "Running hook: #{args.join(' ')}"
     success, output = if defined? Bundler && Bundler.responds_to(:with_clean_env)
                         Bundler.with_clean_env { exec_hook_int(render_hook_json, *args) }
