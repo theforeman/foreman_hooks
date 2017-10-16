@@ -35,10 +35,6 @@ module ForemanHooks::Util
       return true
     end
 
-    # Add current Foreman user loginname as argument
-    user = User.current.login
-    args.push(user)
-
     logger.debug "Running hook: #{args.join(' ')}"
     success, output = if defined? Bundler && Bundler.responds_to(:with_clean_env)
                         Bundler.with_clean_env { exec_hook_int(render_hook_json, *args) }
@@ -51,6 +47,10 @@ module ForemanHooks::Util
   end
 
   def exec_hook_int(stdin_data, *args)
+    # Set environment vars available in hook scripts
+    # Name of active Foreman user:
+    ENV['FOREMAN_HOOKS_USER'] = User.current.login
+
     args.map!(&:to_s)
     output, status = if Open3.respond_to? :capture2e
       Open3.capture2e(*args.push(:stdin_data => stdin_data))
