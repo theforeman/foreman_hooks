@@ -2,7 +2,14 @@ namespace :hooks do
   desc 'Print a list of object names that can be hooked'
   task :objects => :environment do
     Rails.application.config.eager_load_namespaces.each(&:eager_load!)
-    puts ActiveRecord::Base.descendants.collect(&:name).collect(&:underscore).sort
+
+    # Gather the models
+    models = ActiveRecord::Base.descendants.collect(&:name).collect(&:underscore)
+
+    # filter out known models not hookable
+    models.reject! {|e| e.start_with?('habtm')}
+
+    puts models.sort
   end
 
   desc 'Print a list of event names for a given object, e.g. hooks:events[host/managed]'
