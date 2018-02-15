@@ -10,7 +10,11 @@ module ForemanHooks::CallbackHooks
       next unless name
 
       Rails.logger.debug("Created hook method #{event} on #{self}")
-      set_callback name.to_sym, filter.to_sym, "#{event}_hooks".to_sym, prepend: true
+      if "#{event}" == "destroy"
+        set_callback name.to_sym, filter.to_sym, "#{event}_hooks".to_sym, prepend: true
+      else
+        set_callback name.to_sym, filter.to_sym, "#{event}_hooks".to_sym
+      end
       define_method("#{event}_hooks") do
         Rails.logger.debug "Observed #{event} hook on #{self}"
         return unless hooks = ForemanHooks.find_hooks(self.class, event)
