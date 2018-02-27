@@ -16,11 +16,15 @@ module ForemanHooks::Util
     end
   end
 
+  def rabl_path
+    "api/v2/#{render_hook_type.tableize}/show"
+  end
+
   def render_hook_json
     # APIv2 has some pretty good templates.  We could extend them later in special cases.
     # Wrap them in a root node for pre-1.4 compatibility
     view_path = ActionController::Base.view_paths.collect(&:to_path)
-    json = Rabl.render(self, "api/v2/#{render_hook_type.tableize}/show",
+    json = Rabl.render(self, rabl_path,
                        view_path: view_path, format: :json, scope: RablScope.new)
     %Q|{"#{render_hook_type}":#{json}}|
   rescue => e
