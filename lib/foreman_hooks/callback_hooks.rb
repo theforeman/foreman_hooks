@@ -10,7 +10,7 @@ module ForemanHooks::CallbackHooks
       next unless name
 
       Rails.logger.debug("Created hook method #{event} on #{self}")
-      if "#{event}" == "destroy"
+      if "#{event}" == "before_destroy"
         set_callback name.to_sym, filter.to_sym, "#{event}_hooks".to_sym, prepend: true
       else
         set_callback name.to_sym, filter.to_sym, "#{event}_hooks".to_sym
