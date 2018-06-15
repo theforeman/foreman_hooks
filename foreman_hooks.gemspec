@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
 
   s.summary = "Run custom hook scripts on Foreman events"
   s.description = "Plugin engine for Foreman that enables running custom hook scripts on Foreman events"
-  s.homepage = "http://github.com/theforeman/foreman_hooks"
+  s.homepage = "https://github.com/theforeman/foreman_hooks"
   s.licenses = ["GPL-3.0"]
   s.require_paths = ["lib"]
 
