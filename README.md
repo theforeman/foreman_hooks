@@ -131,6 +131,12 @@ may want to ensure stdin is closed to prevent pipe buffer from filling.
       | ~foreman/config/hooks/host/managed/create/50_register_system.sh \
            create foo.example.com
 
+Some arguments are available as environment variables:
+
+Variable | Description 
+-------- | -----------
+FOREMAN_HOOKS_USER | Username of Foreman user
+
 Every hook within the event directory is executed in alphabetical order.  For
 orchestration hooks, an integer prefix in the hook filename will be used as
 the priority value, so influences where it's done in relation to DNS, DHCP, VM
