@@ -3,7 +3,7 @@ require "date"
 Gem::Specification.new do |s|
   s.name = "foreman_hooks"
 
-  s.version = "0.3.14"
+  s.version = "0.3.15"
   s.date = Date.today.to_s
 
   s.summary = "Run custom hook scripts on Foreman events"
