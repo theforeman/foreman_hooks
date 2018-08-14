@@ -33,8 +33,8 @@ module ForemanHooks::OrchestrationHook
     hooks.each do |filename|
       basename = File.basename(filename)
       priority = basename =~ /^(\d+)/ ? $1 : 10000 + (counter += 1)
-      logger.debug "Queuing hook #{basename} for #{self.class.to_s}##{event} at priority #{priority}"
-      queue.create(:name   => "Hook: #{basename}", :priority => priority.to_i,
+      logger.debug "Queuing hook #{filename} for #{self.class.to_s}##{event} at priority #{priority}"
+      queue.create(:name   => "Hook: #{filename}", :priority => priority.to_i,
                    :action => [HookRunner.new(filename, self, event.to_s),
                                event.to_s == 'destroy' ? :hook_execute_del : :hook_execute_set])
     end
