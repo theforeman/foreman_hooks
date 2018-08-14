@@ -12,6 +12,7 @@ module ForemanHooks::OrchestrationHook
   def queue_hooks_validate
     return unless errors.empty?
     queue_hooks(new_record? ? 'create' : 'update')
+    queue_hooks(new_record? ? 'postcreate' : 'postupdate')
   end
 
   def queue_hooks_destroy
@@ -34,9 +35,9 @@ module ForemanHooks::OrchestrationHook
       basename = File.basename(filename)
       priority = basename =~ /^(\d+)/ ? $1 : 10000 + (counter += 1)
       logger.debug "Queuing hook #{filename} for #{self.class.to_s}##{event} at priority #{priority}"
-      queue.create(:name   => "Hook: #{filename}", :priority => priority.to_i,
-                   :action => [HookRunner.new(filename, self, event.to_s),
-                               event.to_s == 'destroy' ? :hook_execute_del : :hook_execute_set])
+      queue_to_use = (event =~ /^post/) ? post_queue : queue
+      queue_to_use.create(:name => "Hook: #{filename}", :priority => priority.to_i,
+        :action => [HookRunner.new(filename, self, event.to_s), event.to_s == 'destroy' ? :hook_execute_del : :hook_execute_set])
     end
   end
 
@@ -54,7 +55,7 @@ module ForemanHooks::OrchestrationHook
     end
 
     def hook_execute_set
-      @obj.exec_hook(@filename, @event == 'destroy' ? 'create' : @event, *args)
+      @obj.exec_hook(@filename, @event, *args)
     end
 
     def hook_execute_del
