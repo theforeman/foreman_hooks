@@ -71,11 +71,21 @@ automatically trigger a rollback of the action. A rollback is performed as
 an opposite action (e.g. for DHCP record creation a rollback action is
 destroy).
 
-To add hooks to these, use these event names:
+The following hooks are executed during `around_save` Rails callback:
 
 * `create`
 * `update`
+
+The following hooks are executed during `on_destroy` Rails callback:
+
 * `destroy`
+
+The following hooks are executed during `after_commit` Rails callback:
+
+* `postcreate`
+* `postupdate`
+
+The major difference between `create` and `postcreate` (or update respectively) is how late the hook is called during save operation. In the former case when a hook fails it starts rollback and operation can be still cancelled. In the latter case object was already saved and there is no way of cancelling the operation, but all referenced data should be properly loaded. The advice is to use the latter hooks as they will likely contain all the required data (e.g. nested parameters).
 
 Orchestration hooks can be given a priority by prefixing the filename with the
 priority number, therefore it is possible to order them before or after
@@ -133,7 +143,7 @@ may want to ensure stdin is closed to prevent pipe buffer from filling.
 
 Some arguments are available as environment variables:
 
-Variable | Description 
+Variable | Description
 -------- | -----------
 FOREMAN_HOOKS_USER | Username of Foreman user
 

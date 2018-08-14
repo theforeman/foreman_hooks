@@ -24,7 +24,7 @@ namespace :hooks do
     events = ActiveRecord::Callbacks::CALLBACKS.map(&:to_s).reject { |e| e.start_with?('around_') }
 
     # 2. List Foreman orchestration callbacks
-    events.concat(['create', 'destroy', 'update']) if model.included_modules.include?(Orchestration)
+    events.concat(['create', 'destroy', 'update', 'postcreate', 'postupdate']) if model.included_modules.include?(Orchestration)
 
     # 3. List custom define_callbacks/define_model_callbacks
     callbacks = model.methods.map { |m| $1 if m =~ /\A_([a-z]\w+)_callbacks\z/ }.compact
