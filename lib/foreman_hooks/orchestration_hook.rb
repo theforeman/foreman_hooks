@@ -18,6 +18,7 @@ module ForemanHooks::OrchestrationHook
   def queue_hooks_destroy
     return unless errors.empty?
     queue_hooks('destroy')
+    queue_hooks('postdestroy')
   end
 
   def queue_hooks(event)

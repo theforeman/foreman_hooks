@@ -68,7 +68,7 @@ module ForemanHooks
     end
 
     def attach_hook(klass, events)
-      if events.keys.detect { |event| ['create', 'update', 'destroy', 'postcreate', 'postupdate'].include? event }
+      if events.keys.detect { |event| ['create', 'update', 'destroy', 'postcreate', 'postupdate', 'postdestroy'].include? event }
         unless klass.ancestors.include?(ForemanHooks::OrchestrationHook)
           logger.debug "Extending #{klass} with foreman_hooks orchestration hooking support"
           klass.send(:include, ForemanHooks::OrchestrationHook)
