@@ -84,6 +84,7 @@ The following hooks are executed during `after_commit` Rails callback:
 
 * `postcreate`
 * `postupdate`
+* `postdestroy`
 
 The major difference between `create` and `postcreate` (or update respectively) is how late the hook is called during save operation. In the former case when a hook fails it starts rollback and operation can be still cancelled. In the latter case object was already saved and there is no way of cancelling the operation, but all referenced data should be properly loaded. The advice is to use the latter hooks as they will likely contain all the required data (e.g. nested parameters).
 
