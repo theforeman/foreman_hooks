@@ -12,7 +12,7 @@ module ForemanHooks::Util
       when "Audited::Adapters::ActiveRecord::Audit", "Audited::Audit"
         'audit'
       else
-        self.class.name.downcase
+        self.class.name
     end
   end
 
