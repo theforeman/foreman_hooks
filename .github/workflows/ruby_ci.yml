@@ -1,0 +1,19 @@
+name: Ruby Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+concurrency:
+  group: ${{ github.ref_name }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Ruby
+    uses: theforeman/actions/.github/workflows/foreman_plugin.yml@v0
+    with:
+      plugin: foreman_hooks
+      matrix_exclude: '[{"task": "test:foreman_hooks"}]'
